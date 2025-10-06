@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block title %}Crowd Control{% endblock %}
+
+{% block content %}
+    <div class="dashboard">
+        <h2>Crowd Control</h2>
+        <p>Admin-only feature: Manage crowd control settings here.</p>
+        <p><a href="{{ url_for('dashboard') }}">Back to Dashboard</a></p>
+    </div>
+{% endblock %}

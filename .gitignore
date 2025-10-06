@@ -1,0 +1,38 @@
+# Environments
+# Do not commit virtual environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Environment variables
+# Do not commit sensitive information
+*.env
+.env.*
+!.env.example
+
+# Python
+# Ignore bytecode and compiled files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Django specific
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+
+# IDE and Editor Folders
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS-generated files
+.DS_Store
+Thumbs.db

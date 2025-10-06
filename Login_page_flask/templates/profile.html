@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block title %}Profile{% endblock %}
+
+{% block content %}
+    <div class="dashboard">
+        <h2>Profile</h2>
+        <p>Username: {{ username }}</p>
+        <p>Manage your profile settings here.</p>
+        <p><a href="{{ url_for('dashboard') }}">Back to Dashboard</a></p>
+    </div>
+{% endblock %}
