@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Crowd Monitoring Dashboard</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <h1>👁️ Real-time Crowd Monitoring & Zone Tracking</h1>
+  <div class="controls">
+    <button onclick="resetTracker()">Reset Tracker</button>
+    <a href="/"><button>Back to Home</button></a>
+  </div>
+  <img src="{{ video_source }}" alt="Video Feed">
+  <p>Total People Detected: <span id="total">0</span></p>
+  <h2>Data Table</h2>
+  <div id="data"></div>
+  <h2>Alerts</h2>
+  <ul id="alerts"></ul>
+  <h2>Time Distribution Chart</h2>
+  <canvas id="timeChart" width="800" height="400"></canvas>
+  <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>

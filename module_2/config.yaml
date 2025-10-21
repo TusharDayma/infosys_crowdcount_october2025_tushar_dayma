@@ -1,0 +1,6 @@
+model:
+  path: yolov8n.pt
+zones:
+  red:
+    label: DANGER ZONE
+alert_threshold: 5.0
