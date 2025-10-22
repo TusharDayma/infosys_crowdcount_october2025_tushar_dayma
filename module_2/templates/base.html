@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Crowd Monitoring</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-left">
+            {% if user %}
+                <a href="{{ url_for('dashboard') }}">New Analysis</a>
+                <a href="{{ url_for('overview') }}">Dashboard</a>
+                <a href="{{ url_for('history') }}">History</a>
+                <a href="{{ url_for('live') }}">Crowd Count (Live)</a>
+            {% else %}
+                <a href="{{ url_for('login') }}">Login</a>
+                <a href="{{ url_for('register') }}">Register</a>
+            {% endif %}
+        </div>
+        <div class="navbar-right">
+            {% if user %}
+                <a href="{{ url_for('profile') }}">Profile</a>
+                <a href="{{ url_for('settings') }}">Settings</a>
+                <a href="{{ url_for('logout') }}" class="nav-logout">Logout</a>
+            {% endif %}
+        </div>
+    </nav>
+    
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <ul class="flashes">
+                {% for message in messages %}
+                    <li>{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+    
+    <div class="main-content">
+        {% block content %}{% endblock %}
+    </div>
+</body>
+</html>
