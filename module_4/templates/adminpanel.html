@@ -1,0 +1,131 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container" style="max-width: 1400px;">
+    <h1>Admin Panel</h1>
+
+    <div class="admin-tabs">
+        <div class="admin-tab-link active" onclick="openTab(event, 'stats')">📈 System Statistics</div>
+        <div class="admin-tab-link" onclick="openTab(event, 'users')">👥 User Management</div>
+        <div class="admin-tab-link" onclick="openTab(event, 'settings')">⚙️ Global Settings</div>
+        <div class="admin-tab-link" onclick="openTab(event, 'activity')">📋 Global Activity Log</div>
+    </div>
+
+    <div id="stats" class="admin-tab-content active">
+        <h2>Total Alerts Per User</h2>
+        <div class="chart-container" style="height: 450px;">
+            <canvas id="adminAlertChart"></canvas>
+        </div>
+    </div>
+
+    <div id="users" class="admin-tab-content">
+        <h2>User Management ({{ all_users|length }} users)</h2>
+        <div style="overflow-x: auto;">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>Username</th>
+                        <th>Email</th>
+                        <th>Role</th>
+                        <th>Total Alerts</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for u in all_users %}
+                    <tr>
+                        <td>
+                            <img src="{{ url_for('static', filename='profile_pics/' + u.profile_pic) }}" alt="Avatar" style="width: 24px; height: 24px; border-radius: 50%; vertical-align: middle; margin-right: 8px;">
+                            {{ u.username }}
+                        </td>
+                        
+                        <td>{{ u.email | default('N/A', true) }}</td>
+                        
+                        <td>
+                            <span class="{{ 'role-admin' if u.role == 'admin' else 'role-user' }}">
+                                {{ u.role | capitalize }}
+                            </span>
+                        </td>
+                        
+                        <td>{{ u.alerts | length }}</td>
+                        
+                        <td class="action-cell">
+                            <a href="{{ url_for('admin_download_csv', user_id=u.id) }}" class="btn-action view">Download CSV</a>
+                            
+                            <form action="{{ url_for('admin_toggle_admin', user_id=u.id) }}" method="POST" style="margin: 0;">
+                                <button type="submit" class="btn-action toggle">
+                                    {{ 'Demote' if u.role == 'admin' else 'Promote' }}
+                                </button>
+                            </form>
+                            
+                            <form action="{{ url_for('admin_delete_user', user_id=u.id) }}" method="POST" style="margin: 0;" onsubmit="return confirm('Are you sure you want to delete {{ u.username }}? This is irreversible.');">
+                                <button type="submit" class="btn-action delete">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div id="settings" class="admin-tab-content">
+        <h2>System-wide Alert Settings</h2>
+        <p>These are the system-wide default thresholds that apply to all users.</p>
+        
+        <form action="{{ url_for('admin_update_settings') }}" method="post" style="margin-top: 2rem;">
+            <div class="form-grid">
+                <div class="form-span-2">
+                    <label for="person_threshold">Per-Person Alert Time (seconds)</label>
+                    <input type="number" id="person_threshold" name="person_threshold" 
+                           value="{{ settings.person_threshold }}" min="1" required>
+                </div>
+
+                <div class="form-span-2" style="margin-top: 1rem;">
+                    <label for="zone_threshold">Zone Population Alert (people)</label>
+                    <input type="number" id="zone_threshold" name="zone_threshold" 
+                           value="{{ settings.zone_threshold }}" min="1" required>
+                </div>
+
+                <div class="form-span-2" style="margin-top: 1rem;">
+                    <label for="overall_threshold">Overall Population Alert (people)</label>
+                    <input type="number" id="overall_threshold" name="overall_threshold" 
+                           value="{{ settings.overall_threshold }}" min="1" required>
+                </div>
+            </div>
+            <button type="submit" style="margin-top: 2.5rem;">Save System Settings</button>
+        </form>
+    </div>
+
+    <div id="activity" class="admin-tab-content">
+        <h2>Global Activity Log (100 Most Recent)</h2>
+        <div style="overflow-x: auto;">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>Timestamp (UTC)</th>
+                        <th>User</th>
+                        <th>Alert Type</th>
+                        <th>Message</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for alert in all_alerts %}
+                    <tr>
+                        <td>{{ alert.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                        <td>{{ alert.user.username }}</td>
+                        <td>{{ alert.alert_type }}</td>
+                        <td>{{ alert.message }}</td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="4" style="text-align: center;">No alerts found in the system.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script src="{{ url_for('static', filename='js/admin.js') }}"></script>
+{% endblock %}

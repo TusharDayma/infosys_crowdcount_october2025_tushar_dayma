@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block title %}History{% endblock %}
+
+{% block content %}
+    <div class="dashboard">
+        <h2>History</h2>
+        <p>View your activity history here.</p>
+        <p><a href="{{ url_for('dashboard') }}">Back to Dashboard</a></p>
+    </div>
+{% endblock %}

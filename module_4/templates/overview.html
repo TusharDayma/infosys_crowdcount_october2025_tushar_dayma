@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% block content %}
+  <h1>👁️ Live Dashboard Overview</h1>
+  <div class="controls">
+    <button onclick="resetTracker()">Reset Tracker</button>
+  </div>
+  
+  {% if video_source %}
+    <img src="{{ video_source }}" alt="Video Feed">
+  {% else %}
+    <div class="container" style="text-align: center; padding: 2rem; border: 1px dashed var(--border-color);">
+      <p style="font-size: 1.2rem; color: var(--text-secondary);">No active analysis session.</p>
+      <p style="color: var(--text-muted); margin-top: 1rem;">
+        Start a new analysis from the 
+        <a href="{{ url_for('dashboard') }}" style="text-decoration: underline;">New Analysis</a> 
+        page.
+      </p>
+    </div>
+  {% endif %}
+  
+  <p>Total People Detected: <span id="total">0</span></p>
+  
+  <h2>Data Table</h2>
+  <div id="data"></div>
+  
+  <h2>Alerts</h2>
+  <ul id="alerts"></ul>
+  
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+{% endblock %}

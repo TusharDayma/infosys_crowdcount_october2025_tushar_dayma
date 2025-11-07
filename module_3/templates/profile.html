@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container">
+    <h1>Profile Settings</h1>
+    
+    <style>
+        .profile-pic-container {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .profile-pic {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid var(--primary-color);
+            box-shadow: var(--shadow-md);
+        }
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+        .form-span-2 {
+            grid-column: span 2;
+        }
+        .danger-zone {
+            border: 2px solid var(--danger-color);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-top: 3rem;
+            background: rgba(239, 68, 68, 0.05);
+        }
+        .danger-zone h2 {
+            color: var(--danger-color);
+            border-bottom: none;
+            margin-top: 0;
+        }
+        .btn-danger {
+            background: var(--danger-color);
+        }
+        .btn-danger:hover {
+            background: #b91c1c;
+        }
+    </style>
+
+    <form method="post" enctype="multipart/form-data">
+
+        <div class="profile-pic-container">
+            <img src="{{ url_for('static', filename='profile_pics/' + user.profile_pic) }}" alt="Profile Picture" class="profile-pic">
+        </div>
+
+        <h2 style="text-align: center; margin-top: -1rem; margin-bottom: 2rem;">{{ user.username }}</h2>
+        
+        <div class="form-grid">
+            <div>
+                <label for="first_name">First Name</label>
+                <input type="text" id="first_name" name="first_name" value="{{ user.first_name | default('', true) }}">
+            </div>
+
+            <div>
+                <label for="last_name">Last Name</label>
+                <input type="text" id="last_name" name="last_name" value="{{ user.last_name | default('', true) }}">
+            </div>
+
+            <div class="form-span-2">
+                <label for="email">Email Address</label>
+                <input type="email" id="email" name="email" value="{{ user.email | default('', true) }}">
+            </div>
+
+            <div class="form-span-2">
+                <label for="profile_pic">Change Profile Picture</label>
+                <input type="file" id="profile_pic" name="profile_pic" accept="image/png, image/jpeg">
+            </div>
+
+            <hr class="form-span-2" style="margin: 1rem 0;">
+
+            <h3 class="form-span-2">Change Password (Optional)</h3>
+            
+            <div>
+                <label for="password">New Password</label>
+                <input type="password" id="password" name="password" placeholder="Leave blank to keep current">
+            </div>
+
+            <div>
+                <label for="confirm_password">Confirm New Password</label>
+                <input type="password" id="confirm_password" name="confirm_password" placeholder="Leave blank to keep current">
+            </div>
+        </div>
+
+        <button type="submit" style="margin-top: 2rem;">Save Changes</button>
+    </form>
+    
+    <div class="danger-zone">
+        <h2>Danger Zone</h2>
+        <p style="text-align: left; margin-bottom: 1.5rem;">Deleting your account is permanent and will remove all your data, including alert history. This action cannot be undone.</p>
+        <form action="{{ url_for('delete_profile') }}" method="post" onsubmit="return confirm('Are you sure you want to delete your account? This is irreversible.');">
+            <button type="submit" class="btn-danger">Delete My Account</button>
+        </form>
+    </div>
+
+</div>
+{% endblock %}

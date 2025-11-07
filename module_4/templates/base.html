@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Crowd Monitoring</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-left">
+            {% if user %}
+                <a href="{{ url_for('dashboard') }}">New Analysis</a>
+                <a href="{{ url_for('overview') }}">Dashboard</a>
+                <a href="{{ url_for('summary') }}">Summary</a>
+                <a href="{{ url_for('history') }}">History</a>
+                {% if user.role == 'admin' %}
+                    <a href="{{ url_for('admin_panel') }}" style="color: var(--secondary-color); font-weight: bold;">Admin Panel</a>
+                {% endif %}
+                {% else %}
+                <a href="{{ url_for('login') }}">Login</a>
+                <a href="{{ url_for('register') }}">Register</a>
+            {% endif %}
+        </div>
+        <div class="navbar-right">
+            {% if user %}
+                <img src="{{ url_for('static', filename='profile_pics/' + user.profile_pic) }}" alt="Avatar" class="navbar-profile-pic">
+                <a href="{{ url_for('profile') }}">{{ user.username }}</a>
+                <a href="{{ url_for('logout') }}" class="nav-logout">Logout</a>
+            {% endif %}
+        </div>
+    </nav>
+    
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <ul class="flashes">
+                {% for category, message in messages %}
+                    <li class="{{ category }}">{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+    
+    <div class="main-content">
+        {% block content %}{% endblock %}
+    </div>
+</body>
+</html>

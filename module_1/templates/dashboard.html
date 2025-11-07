@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block scripts %}
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+{% endblock %}
+
+{% block content %}
+    <div class="dashboard-container">
+        <button class="toggle-btn" onclick="toggleSidebar()">☰</button>
+        <div class="sidebar" id="sidebar">
+            <h3>Navigation</h3>
+            <ul>
+                <li><a href="{{ url_for('profile') }}">Profile</a></li>
+                <li><a href="{{ url_for('history') }}">History</a></li>
+                {% if role == 'admin' %}
+                    <li><a href="{{ url_for('crowd_control') }}">Crowd Control</a></li>
+                {% endif %}
+                <li><a href="{{ url_for('logout') }}">Logout</a></li>
+            </ul>
+        </div>
+        <div class="main-content" id="main-content">
+            <h2>Dashboard</h2>
+            <p><strong>Username:</strong> {{ username }}</p>
+            <p><strong>Role:</strong> {{ role | capitalize }}</p>
+            <p>{{ content }}</p>
+            
+            {% if role == 'admin' %}
+                <div class="admin-actions">
+                    <h3>Admin Actions</h3>
+                    <ul>
+                        <li><a href="{{ url_for('crowd_control') }}">Manage Crowd Control</a></li>
+                        <li><a href="#">View Reports</a></li>
+                    </ul>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

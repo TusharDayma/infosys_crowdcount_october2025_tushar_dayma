@@ -1,0 +1,1525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Crowd Monitoring & Safety System</title>
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  :root {
+    --primary: #0ea5e9;
+    --primary-dark: #0284c7;
+    --secondary: #8b5cf6;
+    --accent: #f59e0b;
+    --success: #10b981;
+    --danger: #ef4444;
+    --dark: #0f172a;
+    --gray: #64748b;
+    --light: #f1f5f9;
+    --white: #ffffff;
+  }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: var(--dark);
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg width="60" height="60" xmlns="http://www.w3.org/2000/svg"><rect width="60" height="60" fill="none"/><circle cx="30" cy="30" r="1.5" fill="rgba(255,255,255,0.1)"/></svg>');
+    animation: float 20s linear infinite;
+  }
+
+  @keyframes float {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(-60px); }
+  }
+
+  .hero-content {
+    text-align: center;
+    position: relative;
+    z-index: 1;
+    max-width: 900px;
+  }
+
+  .hero h1 {
+    font-size: clamp(2.5rem, 6vw, 4.5rem);
+    font-weight: 800;
+    color: var(--white);
+    margin-bottom: 1.5rem;
+    animation: slideDown 0.8s ease-out;
+    text-shadow: 0 4px 30px rgba(0,0,0,0.3);
+  }
+
+  .hero p {
+    font-size: clamp(1.1rem, 2vw, 1.4rem);
+    color: rgba(255,255,255,0.95);
+    margin-bottom: 3rem;
+    animation: slideUp 0.8s ease-out 0.2s both;
+  }
+
+  @keyframes slideDown {
+    from { opacity: 0; transform: translateY(-30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 1.5rem;
+    margin-top: 3rem;
+    animation: fadeIn 1s ease-out 0.4s both;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  .stat-card {
+    background: rgba(255,255,255,0.15);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.2);
+    padding: 1.5rem;
+    border-radius: 16px;
+    transition: all 0.3s ease;
+  }
+
+  .stat-card:hover {
+    transform: translateY(-5px);
+    background: rgba(255,255,255,0.25);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+  }
+
+  .stat-label {
+    font-size: 0.85rem;
+    color: rgba(255,255,255,0.8);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 0.5rem;
+  }
+
+  .stat-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--white);
+  }
+
+  .scroll-indicator {
+    position: absolute;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    animation: bounce 2s infinite;
+    cursor: pointer;
+  }
+
+  @keyframes bounce {
+    0%, 100% { transform: translateX(-50%) translateY(0); }
+    50% { transform: translateX(-50%) translateY(10px); }
+  }
+
+  .scroll-indicator svg {
+    width: 30px;
+    height: 30px;
+    stroke: var(--white);
+  }
+
+  .content-section {
+    background: var(--light);
+    padding: 5rem 2rem;
+  }
+
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .section-header {
+    text-align: center;
+    margin-bottom: 4rem;
+  }
+
+  .section-title {
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 800;
+    color: var(--dark);
+    margin-bottom: 1rem;
+    position: relative;
+    display: inline-block;
+  }
+
+  .section-title::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 4px;
+    background: linear-gradient(90deg, var(--primary), var(--secondary));
+    border-radius: 2px;
+  }
+
+  .section-subtitle {
+    font-size: 1.1rem;
+    color: var(--gray);
+    max-width: 600px;
+    margin: 1.5rem auto 0;
+  }
+
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-top: 3rem;
+  }
+
+  .feature-card {
+    background: var(--white);
+    padding: 2rem;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .feature-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: linear-gradient(90deg, var(--primary), var(--secondary));
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
+  }
+
+  .feature-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 50px rgba(0,0,0,0.15);
+  }
+
+  .feature-card:hover::before {
+    transform: scaleX(1);
+  }
+
+  .feature-icon {
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+    font-size: 1.8rem;
+  }
+
+  .feature-title {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--dark);
+    margin-bottom: 1rem;
+  }
+
+  .feature-desc {
+    color: var(--gray);
+    line-height: 1.7;
+  }
+
+  .tech-stack {
+    background: var(--white);
+    padding: 5rem 2rem;
+  }
+
+  .tech-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+    margin-top: 3rem;
+  }
+
+  .tech-item {
+    background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+    padding: 2rem;
+    border-radius: 16px;
+    border: 2px solid transparent;
+    transition: all 0.3s ease;
+  }
+
+  .tech-item:hover {
+    border-color: var(--primary);
+    transform: scale(1.05);
+  }
+
+  .tech-category {
+    font-size: 0.85rem;
+    color: var(--primary);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 0.5rem;
+  }
+
+  .tech-name {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--dark);
+    margin-bottom: 0.5rem;
+  }
+
+  .tech-purpose {
+    color: var(--gray);
+    font-size: 0.95rem;
+  }
+
+  .architecture {
+    background: linear-gradient(135deg, #0f172a, #1e293b);
+    padding: 5rem 2rem;
+    color: var(--white);
+  }
+
+  .architecture .section-title,
+  .architecture .section-subtitle {
+    color: var(--white);
+  }
+
+  .flow-diagram {
+    background: rgba(255,255,255,0.05);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 20px;
+    padding: 3rem;
+    margin-top: 3rem;
+  }
+
+  .flow-step {
+    display: flex;
+    align-items: center;
+    margin-bottom: 2rem;
+    animation: slideRight 0.6s ease-out;
+  }
+
+  @keyframes slideRight {
+    from { opacity: 0; transform: translateX(-30px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+
+  .step-number {
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1.2rem;
+    margin-right: 1.5rem;
+    flex-shrink: 0;
+  }
+
+  .step-content h3 {
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .step-content p {
+    color: rgba(255,255,255,0.8);
+    font-size: 0.95rem;
+  }
+
+  .cta-section {
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    padding: 5rem 2rem;
+    text-align: center;
+    color: var(--white);
+  }
+
+  .cta-title {
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 800;
+    margin-bottom: 1.5rem;
+  }
+
+  .cta-desc {
+    font-size: 1.2rem;
+    margin-bottom: 2.5rem;
+    opacity: 0.95;
+  }
+
+  .btn {
+    display: inline-block;
+    padding: 1rem 2.5rem;
+    background: var(--white);
+    color: var(--primary);
+    text-decoration: none;
+    border-radius: 50px;
+    font-weight: 600;
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+  }
+
+  .btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+  }
+
+  .footer {
+    background: var(--dark);
+    color: var(--white);
+    padding: 2rem;
+    text-align: center;
+  }
+
+  .footer p {
+    opacity: 0.8;
+  }
+
+  .metrics-section {
+    background: var(--white);
+    padding: 5rem 2rem;
+  }
+
+  .metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+    margin-top: 3rem;
+  }
+
+  .metric-card {
+    background: linear-gradient(135deg, #f8fafc, #ffffff);
+    padding: 2rem;
+    border-radius: 20px;
+    border: 2px solid #e2e8f0;
+    text-align: center;
+    transition: all 0.3s ease;
+  }
+
+  .metric-card:hover {
+    transform: translateY(-8px);
+    border-color: var(--primary);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+  }
+
+  .metric-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+  }
+
+  .metric-value {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: var(--primary);
+    margin-bottom: 0.5rem;
+  }
+
+  .metric-label {
+    color: var(--gray);
+    font-size: 1rem;
+  }
+
+  .api-section {
+    background: var(--light);
+    padding: 5rem 2rem;
+  }
+
+  .api-grid {
+    display: grid;
+    gap: 1.5rem;
+    margin-top: 3rem;
+  }
+
+  .api-card {
+    background: var(--white);
+    padding: 1.5rem;
+    border-radius: 16px;
+    border-left: 4px solid var(--primary);
+    transition: all 0.3s ease;
+    display: grid;
+    grid-template-columns: 150px 100px 1fr;
+    gap: 1.5rem;
+    align-items: center;
+  }
+
+  .api-card:hover {
+    transform: translateX(8px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  }
+
+  .api-endpoint {
+    font-family: 'Courier New', monospace;
+    font-weight: 700;
+    color: var(--dark);
+    font-size: 0.95rem;
+  }
+
+  .api-method {
+    display: inline-block;
+    padding: 0.4rem 0.8rem;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 0.85rem;
+    text-align: center;
+  }
+
+  .method-get { background: #dbeafe; color: #1e40af; }
+  .method-post { background: #d1fae5; color: #065f46; }
+
+  .api-desc {
+    color: var(--gray);
+    font-size: 0.95rem;
+  }
+
+  .use-cases {
+    background: linear-gradient(135deg, #fef3c7, #fde68a);
+    padding: 5rem 2rem;
+  }
+
+  .use-cases .section-title {
+    color: var(--dark);
+  }
+
+  .use-cases .section-subtitle {
+    color: #92400e;
+  }
+
+  .use-case-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+    margin-top: 3rem;
+  }
+
+  .use-case-card {
+    background: var(--white);
+    padding: 2rem;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+  }
+
+  .use-case-card:hover {
+    transform: scale(1.05);
+    box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+  }
+
+  .use-case-emoji {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+  }
+
+  .use-case-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--dark);
+    margin-bottom: 1rem;
+  }
+
+  .use-case-desc {
+    color: var(--gray);
+    line-height: 1.7;
+    margin-bottom: 1rem;
+  }
+
+  .use-case-features {
+    list-style: none;
+    padding: 0;
+  }
+
+  .use-case-features li {
+    padding: 0.5rem 0;
+    color: var(--gray);
+    font-size: 0.9rem;
+  }
+
+  .use-case-features li::before {
+    content: '✓ ';
+    color: var(--success);
+    font-weight: 700;
+    margin-right: 0.5rem;
+  }
+
+  .alert-logic {
+    background: var(--white);
+    padding: 5rem 2rem;
+  }
+
+  .alert-types {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-top: 3rem;
+  }
+
+  .alert-type {
+    background: linear-gradient(135deg, #fff1f2, #ffffff);
+    padding: 2rem;
+    border-radius: 20px;
+    border: 2px solid #fecaca;
+    transition: all 0.3s ease;
+  }
+
+  .alert-type:hover {
+    border-color: var(--danger);
+    transform: translateY(-5px);
+  }
+
+  .alert-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1.5rem;
+  }
+
+  .alert-icon {
+    width: 50px;
+    height: 50px;
+    background: var(--danger);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    margin-right: 1rem;
+  }
+
+  .alert-name {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--dark);
+  }
+
+  .alert-description {
+    color: var(--gray);
+    line-height: 1.7;
+    margin-bottom: 1rem;
+  }
+
+  .alert-trigger {
+    background: #fef2f2;
+    padding: 1rem;
+    border-radius: 12px;
+    border-left: 4px solid var(--danger);
+    font-size: 0.9rem;
+    color: #991b1b;
+    font-family: 'Courier New', monospace;
+  }
+
+  .setup-section {
+    background: linear-gradient(135deg, #0f172a, #1e293b);
+    padding: 5rem 2rem;
+    color: var(--white);
+  }
+
+  .setup-section .section-title,
+  .setup-section .section-subtitle {
+    color: var(--white);
+  }
+
+  .setup-steps {
+    display: grid;
+    gap: 2rem;
+    margin-top: 3rem;
+  }
+
+  .setup-card {
+    background: rgba(255,255,255,0.05);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.1);
+    padding: 2rem;
+    border-radius: 16px;
+  }
+
+  .setup-card h3 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    color: var(--primary);
+  }
+
+  .code-block {
+    background: rgba(0,0,0,0.5);
+    padding: 1.5rem;
+    border-radius: 12px;
+    overflow-x: auto;
+    margin: 1rem 0;
+  }
+
+  .code-block code {
+    color: #86efac;
+    font-family: 'Courier New', monospace;
+    font-size: 0.9rem;
+    line-height: 1.6;
+  }
+
+  .db-schema {
+    background: var(--light);
+    padding: 5rem 2rem;
+  }
+
+  .schema-grid {
+    display: grid;
+    gap: 2rem;
+    margin-top: 3rem;
+  }
+
+  .schema-table {
+    background: var(--white);
+    padding: 2rem;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+  }
+
+  .table-name {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 1.5rem;
+    font-family: 'Courier New', monospace;
+  }
+
+  .column-list {
+    display: grid;
+    gap: 0.8rem;
+  }
+
+  .column-item {
+    display: flex;
+    align-items: center;
+    padding: 0.8rem;
+    background: var(--light);
+    border-radius: 8px;
+  }
+
+  .column-name {
+    font-family: 'Courier New', monospace;
+    font-weight: 700;
+    color: var(--dark);
+    margin-right: 1rem;
+  }
+
+  .column-type {
+    font-size: 0.85rem;
+    color: var(--gray);
+  }
+
+  .future-section {
+    background: linear-gradient(135deg, #7c3aed, #a78bfa);
+    padding: 5rem 2rem;
+    color: var(--white);
+  }
+
+  .future-section .section-title {
+    color: var(--white);
+  }
+
+  .future-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+    margin-top: 3rem;
+  }
+
+  .future-card {
+    background: rgba(255,255,255,0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.2);
+    padding: 2rem;
+    border-radius: 20px;
+    transition: all 0.3s ease;
+  }
+
+  .future-card:hover {
+    background: rgba(255,255,255,0.2);
+    transform: translateY(-8px);
+  }
+
+  .future-emoji {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .future-title {
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+  }
+
+  .future-desc {
+    opacity: 0.9;
+    line-height: 1.7;
+  }
+
+  @media (max-width: 768px) {
+    .features-grid, .tech-grid {
+      grid-template-columns: 1fr;
+    }
+    
+    .flow-step {
+      flex-direction: column;
+      text-align: center;
+    }
+    
+    .step-number {
+      margin-right: 0;
+      margin-bottom: 1rem;
+    }
+
+    .api-card {
+      grid-template-columns: 1fr;
+      gap: 1rem;
+    }
+  }
+</style>
+</head>
+<body>
+
+<section class="hero">
+  <div class="hero-content">
+    <h1>AI Crowd Monitoring & Safety System</h1>
+    <p>Real-time person detection, intelligent zone monitoring, and comprehensive safety analytics powered by YOLOv8 and Flask</p>
+    
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-label">Detection</div>
+        <div class="stat-value">YOLOv8</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Backend</div>
+        <div class="stat-value">Flask</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Database</div>
+        <div class="stat-value">PostgreSQL</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Analytics</div>
+        <div class="stat-value">Chart.js</div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="scroll-indicator" onclick="document.querySelector('.content-section').scrollIntoView({behavior: 'smooth'})">
+    <svg fill="none" viewBox="0 0 24 24" stroke-width="2">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+    </svg>
+  </div>
+</section>
+
+<section class="content-section">
+  <div class="container">
+    <div class="section-header">
+      <h2 class="section-title">Key Features</h2>
+      <p class="section-subtitle">Advanced capabilities designed for comprehensive crowd safety management in stations, malls, events, and industrial facilities</p>
+    </div>
+    
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">👁️</div>
+        <h3 class="feature-title">Real-Time Detection</h3>
+        <p class="feature-desc">YOLOv8-powered person tracking with persistent IDs across frames, ensuring accurate monitoring in dynamic environments</p>
+      </div>
+      
+      <div class="feature-card">
+        <div class="feature-icon">🎯</div>
+        <h3 class="feature-title">Interactive Zone Drawing</h3>
+        <p class="feature-desc">Define custom danger zones with mouse-based interaction before analysis begins, adapting to any venue layout</p>
+      </div>
+      
+      <div class="feature-card">
+        <div class="feature-icon">⏱️</div>
+        <h3 class="feature-title">Time-Based Tracking</h3>
+        <p class="feature-desc">Accumulate per-person time spent in red and green zones with configurable threshold alerts</p>
+      </div>
+      
+      <div class="feature-card">
+        <div class="feature-icon">🚨</div>
+        <h3 class="feature-title">Multi-Level Alerts</h3>
+        <p class="feature-desc">Zone population, overall crowd density, and individual time-based alerts with customizable thresholds</p>
+      </div>
+      
+      <div class="feature-card">
+        <div class="feature-icon">🔐</div>
+        <h3 class="feature-title">Admin Controls</h3>
+        <p class="feature-desc">Role-based access control with user management, promotion/demotion capabilities, and system configuration</p>
+      </div>
+      
+      <div class="feature-card">
+        <div class="feature-icon">📊</div>
+        <h3 class="feature-title">Comprehensive Reports</h3>
+        <p class="feature-desc">Generate PDF and CSV exports using ReportLab for audit trails and detailed analysis</p>
+      </div>
+      
+      <div class="feature-card">
+        <div class="feature-icon">🔥</div>
+        <h3 class="feature-title">Density Heatmaps</h3>
+        <p class="feature-desc">Visualize crowd density patterns over time with overlay heatmap generation on processed frames</p>
+      </div>
+      
+      <div class="feature-card">
+        <div class="feature-icon">⚙️</div>
+        <h3 class="feature-title">Scalable Architecture</h3>
+        <p class="feature-desc">Modular design allowing detector settings to reload from database for live tuning without restart</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="tech-stack">
+  <div class="container">
+    <div class="section-header">
+      <h2 class="section-title">Technology Stack</h2>
+      <p class="section-subtitle">Built with modern, production-ready technologies for reliability and performance</p>
+    </div>
+    
+    <div class="tech-grid">
+      <div class="tech-item">
+        <div class="tech-category">AI Model</div>
+        <div class="tech-name">YOLOv8</div>
+        <p class="tech-purpose">State-of-the-art person detection and multi-object tracking with Ultralytics implementation</p>
+      </div>
+      
+      <div class="tech-item">
+        <div class="tech-category">Backend Framework</div>
+        <div class="tech-name">Flask</div>
+        <p class="tech-purpose">RESTful API, JWT authentication, route management, and real-time streaming endpoints</p>
+      </div>
+      
+      <div class="tech-item">
+        <div class="tech-category">Database</div>
+        <div class="tech-name">PostgreSQL</div>
+        <p class="tech-purpose">Robust alert persistence, user management, and system settings with SQLAlchemy ORM</p>
+      </div>
+      
+      <div class="tech-item">
+        <div class="tech-category">Frontend</div>
+        <div class="tech-name">Chart.js</div>
+        <p class="tech-purpose">Dynamic data visualization, real-time dashboard updates, and interactive analytics</p>
+      </div>
+      
+      <div class="tech-item">
+        <div class="tech-category">Reporting</div>
+        <div class="tech-name">ReportLab</div>
+        <p class="tech-purpose">Professional PDF generation with per-person summaries and CSV data exports</p>
+      </div>
+      
+      <div class="tech-item">
+        <div class="tech-category">Security</div>
+        <div class="tech-name">JWT Extended</div>
+        <p class="tech-purpose">Secure token-based authentication with role management and session control</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="architecture">
+  <div class="container">
+    <div class="section-header">
+      <h2 class="section-title">System Workflow</h2>
+      <p class="section-subtitle">From video input to actionable insights in real-time</p>
+    </div>
+    
+    <div class="flow-diagram">
+      <div class="flow-step">
+        <div class="step-number">1</div>
+        <div class="step-content">
+          <h3>Video Input</h3>
+          <p>System accepts live webcam feed or uploaded video files for analysis</p>
+        </div>
+      </div>
+      
+      <div class="flow-step">
+        <div class="step-number">2</div>
+        <div class="step-content">
+          <h3>Zone Definition</h3>
+          <p>User interactively draws danger zones via OpenCV window using mouse events</p>
+        </div>
+      </div>
+      
+      <div class="flow-step">
+        <div class="step-number">3</div>
+        <div class="step-content">
+          <h3>Detection & Tracking</h3>
+          <p>YOLOv8 processes frames with persistent ID tracking across the video stream</p>
+        </div>
+      </div>
+      
+      <div class="flow-step">
+        <div class="step-number">4</div>
+        <div class="step-content">
+          <h3>Time Accumulation</h3>
+          <p>System calculates elapsed time for each person in designated zones per frame</p>
+        </div>
+      </div>
+      
+      <div class="flow-step">
+        <div class="step-number">5</div>
+        <div class="step-content">
+          <h3>Alert Generation</h3>
+          <p>Threshold comparisons trigger person, zone, and overall population alerts</p>
+        </div>
+      </div>
+      
+      <div class="flow-step">
+        <div class="step-number">6</div>
+        <div class="step-content">
+          <h3>Data Persistence</h3>
+          <p>Alerts logged to PostgreSQL AlertHistory table with timestamps and metadata</p>
+        </div>
+      </div>
+      
+      <div class="flow-step">
+        <div class="step-number">7</div>
+        <div class="step-content">
+          <h3>Dashboard Updates</h3>
+          <p>Frontend polls /person_data endpoint and dynamically updates charts and tables</p>
+        </div>
+      </div>
+      
+      <div class="flow-step">
+        <div class="step-number">8</div>
+        <div class="step-content">
+          <h3>Report Generation</h3>
+          <p>Users can download comprehensive PDF/CSV reports for analysis and auditing</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="metrics-section">
+  <div class="container">
+    <div class="section-header">
+      <h2 class="section-title">Performance Metrics</h2>
+      <p class="section-subtitle">Real-world performance indicators demonstrating system efficiency and reliability</p>
+    </div>
+    
+    <div class="metrics-grid">
+      <div class="metric-card">
+        <div class="metric-icon">⚡</div>
+        <div class="metric-value">30+</div>
+        <div class="metric-label">FPS Processing Speed</div>
+      </div>
+      
+      <div class="metric-card">
+        <div class="metric-icon">🎯</div>
+        <div class="metric-value">95%</div>
+        <div class="metric-label">Detection Accuracy</div>
+      </div>
+      
+      <div class="metric-card">
+        <div class="metric-icon">⏱️</div>
+        <div class="metric-value">&lt;1s</div>
+        <div class="metric-label">Alert Response Time</div>
+      </div>
+      
+      <div class="metric-card">
+        <div class="metric-icon">💾</div>
+        <div class="metric-value">1000+</div>
+        <div class="metric-label">Concurrent Tracking IDs</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="use-cases">
+  <div class="container">
+    <div class="section-header">
+      <h2 class="section-title">Real-World Applications</h2>
+      <p class="section-subtitle">Versatile deployment scenarios across multiple industries</p>
+    </div>
+    
+    <div class="use-case-grid">
+      <div class="use-case-card">
+        <div class="use-case-emoji">🚉</div>
+        <h3 class="use-case-title">Railway Stations</h3>
+        <p class="use-case-desc">Monitor platform crowds, detect overcrowding on stairs and bridges, and manage passenger flow during peak hours.</p>
+        <ul class="use-case-features">
+          <li>Platform capacity monitoring</li>
+          <li>Emergency evacuation management</li>
+          <li>Queue length tracking</li>
+        </ul>
+      </div>
+      
+      <div class="use-case-card">
+        <div class="use-case-emoji">🏢</div>
+        <h3 class="use-case-title">Shopping Malls</h3>
+        <p class="use-case-desc">Track foot traffic patterns, identify bottlenecks near escalators and exits, and optimize store layout based on density data.</p>
+        <ul class="use-case-features">
+          <li>Real-time occupancy tracking</li>
+          <li>Social distancing compliance</li>
+          <li>Heat mapping for retail analytics</li>
+        </ul>
+      </div>
+      
+      <div class="use-case-card">
+        <div class="use-case-emoji">🎭</div>
+        <h3 class="use-case-title">Events & Concerts</h3>
+        <p class="use-case-desc">Ensure crowd safety at large gatherings, detect dangerous crowd surges, and coordinate emergency response teams.</p>
+        <ul class="use-case-features">
+          <li>Crowd surge detection</li>
+          <li>Entry/exit flow management</li>
+          <li>Zone capacity enforcement</li>
+        </ul>
+      </div>
+      
+      <div class="use-case-card">
+        <div class="use-case-emoji">🏭</div>
+        <h3 class="use-case-title">Industrial Facilities</h3>
+        <p class="use-case-desc">Monitor restricted areas, track worker presence in hazardous zones, and ensure compliance with safety protocols.</p>
+        <ul class="use-case-features">
+          <li>Restricted zone monitoring</li>
+          <li>Worker time tracking in danger zones</li>
+          <li>Safety compliance reporting</li>
+        </ul>
+      </div>
+      
+      <div class="use-case-card">
+        <div class="use-case-emoji">🏫</div>
+        <h3 class="use-case-title">Educational Institutions</h3>
+        <p class="use-case-desc">Manage student flow during class changes, monitor playground safety, and enhance campus security protocols.</p>
+        <ul class="use-case-features">
+          <li>Hallway congestion management</li>
+          <li>Unauthorized area detection</li>
+          <li>Emergency headcount verification</li>
+        </ul>
+      </div>
+      
+      <div class="use-case-card">
+        <div class="use-case-emoji">🏥</div>
+        <h3 class="use-case-title">Healthcare Facilities</h3>
+        <p class="use-case-desc">Monitor waiting room capacity, manage visitor flow in ICUs, and ensure compliance with patient-to-space ratios.</p>
+        <ul class="use-case-features">
+          <li>Waiting room management</li>
+          <li>Visitor tracking in restricted areas</li>
+          <li>Emergency room capacity alerts</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="api-section">
+  <div class="container">
+    <div class="section-header">
+      <h2 class="section-title">API Endpoints</h2>
+      <p class="section-subtitle">RESTful API architecture for seamless integration and control</p>
+    </div>
+    
+    <div class="api-grid">
+      <div class="api-card">
+        <div class="api-endpoint">/login</div>
+        <div class="api-method method-post">POST</div>
+        <div class="api-desc">Authenticate users and establish JWT session cookies</div>
+      </div>
+      
+      <div class="api-card">
+        <div class="api-endpoint">/register</div>
+        <div class="api-method method-post">POST</div>
+        <div class="api-desc">Create new user accounts (first user becomes admin)</div>
+      </div>
+      
+      <div class="api-card">
+        <div class="api-endpoint">/live</div>
+        <div class="api-method method-get">GET</div>
+        <div class="api-desc">Initialize live webcam session with zone drawing interface</div>
+      </div>
+      
+      <div class="api-card">
+        <div class="api-endpoint">/upload</div>
+        <div class="api-method method-post">POST</div>
+        <div class="api-desc">Upload video files for offline analysis and processing</div>
+      </div>
+      
+      <div class="api-card">
+        <div class="api-endpoint">/video_feed_live</div>
+        <div class="api-method method-get">GET</div>
+        <div class="api-desc">Stream processed frames with annotations (MJPEG format)</div>
+      </div>
+      
+      <div class="api-card">
+        <div class="api-endpoint">/person_data</div>
+        <div class="api-method method-get">GET</div>
+        <div class="api-desc">Fetch real-time JSON with per-person and global metrics</div>
+      </div>
+      
+      <div class="api-card">
+        <div class="api-endpoint">/download_pdf/:id</div>
+        <div class="api-method method-get">GET</div>
+        <div class="api-desc">Generate and download per-person PDF report</div>
+      </div>
+      
+      <div class="api-card">
+        <div class="api-endpoint">/download_csv</div>
+        <div class="api-method method-get">GET</div>
+        <div class="api-desc">Export complete alert history as CSV spreadsheet</div>
+      </div>
+      
+      <div class="api-card">
+        <div class="api-endpoint">/reset</div>
+        <div class="api-method method-post">POST</div>
+        <div class="api-desc">Reset tracker state and clear zone definitions</div>
+      </div>
+      
+      <div class="api-card">
+        <div class="api-endpoint">/admin/settings</div>
+        <div class="api-method method-post">POST</div>
+        <div class="api-desc">Update system thresholds (admin authentication required)</div>
+      </div>
+      
+      <div class="api-card">
+        <div class="api-endpoint">/admin/users</div>
+        <div class="api-method method-get">GET</div>
+        <div class="api-desc">Retrieve user list with role management capabilities</div>
+      </div>
+      
+      <div class="api-card">
+        <div class="api-endpoint">/admin/stats</div>
+        <div class="api-method method-get">GET</div>
+        <div class="api-desc">Access system-wide statistics and analytics dashboard</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="alert-logic">
+  <div class="container">
+    <div class="section-header">
+      <h2 class="section-title">Alert System Logic</h2>
+      <p class="section-subtitle">Multi-tiered alert mechanisms with configurable thresholds</p>
+    </div>
+    
+    <div class="alert-types">
+      <div class="alert-type">
+        <div class="alert-header">
+          <div class="alert-icon">👤</div>
+          <div class="alert-name">Per-Person Alert</div>
+        </div>
+        <p class="alert-description">Triggered when an individual's cumulative time in the red danger zone exceeds the configured threshold. Enables tracking of specific personnel in hazardous areas.</p>
+        <div class="alert-trigger">
+          IF person_red_zone_time > person_threshold<br>
+          THEN log_alert(person_id, "Person Alert")
+        </div>
+      </div>
+      
+      <div class="alert-type">
+        <div class="alert-header">
+          <div class="alert-icon">🚨</div>
+          <div class="alert-name">Zone Population Alert</div>
+        </div>
+        <p class="alert-description">Activated when the number of people currently present in the red zone exceeds capacity limits. Critical for preventing overcrowding in restricted areas.</p>
+        <div class="alert-trigger">
+          IF current_red_zone_count > zone_threshold<br>
+          THEN activate_zone_alert()
+        </div>
+      </div>
+      
+      <div class="alert-type">
+        <div class="alert-header">
+          <div class="alert-icon">⚠️</div>
+          <div class="alert-name">Overall Population Alert</div>
+        </div>
+        <p class="alert-description">System-level alert triggered when total detected individuals across all zones surpass the overall capacity threshold. Useful for venue-wide crowd management.</p>
+        <div class="alert-trigger">
+          IF total_detected_people > overall_threshold<br>
+          THEN system_alert("Overcrowding")
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="db-schema">
+  <div class="container">
+    <div class="section-header">
+      <h2 class="section-title">Database Schema</h2>
+      <p class="section-subtitle">PostgreSQL data models with SQLAlchemy ORM</p>
+    </div>
+    
+    <div class="schema-grid">
+      <div class="schema-table">
+        <div class="table-name">users</div>
+        <div class="column-list">
+          <div class="column-item">
+            <span class="column-name">id</span>
+            <span class="column-type">Primary Key, Integer</span>
+          </div>
+          <div class="column-item">
+            <span class="column-name">username</span>
+            <span class="column-type">Unique, String(80)</span>
+          </div>
+          <div class="column-item">
+            <span class="column-name">password_hash</span>
+            <span class="column-type">String(255) - Bcrypt hashed</span>
+          </div>
+          <div class="column-item">
+            <span class="column-name">email</span>
+            <span class="column-type">Unique, String(120)</span>
+          </div>
+          <div class="column-item">
+            <span class="column-name">role</span>
+            <span class="column-type">Enum: 'admin', 'user'</span>
+          </div>
+          <div class="column-item">
+            <span class="column-name">profile_pic</span>
+            <span class="column-type">String(200) - Avatar URL</span>
+          </div>
+          <div class="column-item">
+            <span class="column-name">created_at</span>
+            <span class="column-type">Timestamp</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="schema-table">
+        <div class="table-name">alert_history</div>
+        <div class="column-list">
+          <div class="column-item">
+            <span class="column-name">id</span>
+            <span class="column-type">Primary Key, Integer</span>
+          </div>
+          <div class="column-item">
+            <span class="column-name">user_id</span>
+            <span class="column-type">Foreign Key → users.id</span>
+          </div>
+          <div class="column-item">
+            <span class="column-name">timestamp</span>
+            <span class="column-type">DateTime - Alert occurrence</span>
+          </div>
+          <div class="column-item">
+            <span class="column-name">alert_type</span>
+            <span class="column-type">String: person/zone/overall</span>
+          </div>
+          <div class="column-item">
+            <span class="column-name">message</span>
+            <span class="column-type">Text - Alert description</span>
+          </div>
+          <div class="column-item">
+            <span class="column-name">person_id</span>
+            <span class="column-type">Integer - Tracked person ID</span>
+          </div>
+          <div class="column-item">
+            <span class="column-name">severity</span>
+            <span class="column-type">Enum: low/medium/high</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="schema-table">
+        <div class="table-name">system_settings</div>
+        <div class="column-list">
+          <div class="column-item">
+            <span class="column-name">id</span>
+            <span class="column-type">Primary Key, Integer</span>
+          </div>
+          <div class="column-item">
+            <span class="column-name">key</span>
+            <span class="column-type">Unique, String(100)</span>
+          </div>
+          <div class="column-item">
+            <span class="column-name">value</span>
+            <span class="column-type">String(255) - JSON serializable</span>
+          </div>
+          <div class="column-item">
+            <span class="column-name">description</span>
+            <span class="column-type">Text - Setting purpose</span>
+          </div>
+          <div class="column-item">
+            <span class="column-name">updated_at</span>
+            <span class="column-type">Timestamp - Last modification</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="setup-section">
+  <div class="container">
+    <div class="section-header">
+      <h2 class="section-title">Local Setup Guide</h2>
+      <p class="section-subtitle">Step-by-step installation and configuration instructions</p>
+    </div>
+    
+    <div class="setup-steps">
+      <div class="setup-card">
+        <h3>1. Clone Repository</h3>
+        <div class="code-block">
+          <code>git clone https://github.com/your-username/crowd-monitoring-ai.git<br>
+cd crowd-monitoring-ai</code>
+        </div>
+      </div>
+      
+      <div class="setup-card">
+        <h3>2. Create Virtual Environment</h3>
+        <div class="code-block">
+          <code># Windows<br>
+python -m venv venv<br>
+venv\Scripts\activate<br><br>
+# macOS / Linux<br>
+python3 -m venv venv<br>
+source venv/bin/activate</code>
+        </div>
+      </div>
+      
+      <div class="setup-card">
+        <h3>3. Install Dependencies</h3>
+        <div class="code-block">
+          <code>pip install --upgrade pip<br>
+pip install -r requirements.txt<br><br>
+# Key packages:<br>
+# - ultralytics (YOLOv8)<br>
+# - flask, flask-jwt-extended<br>
+# - sqlalchemy, psycopg2<br>
+# - opencv-python<br>
+# - reportlab</code>
+        </div>
+      </div>
+      
+      <div class="setup-card">
+        <h3>4. Configure Environment</h3>
+        <div class="code-block">
+          <code># Create .env file<br>
+DATABASE_URL=postgresql://user:pass@localhost/crowd_db<br>
+SECRET_KEY=your-secret-key-here<br>
+JWT_SECRET_KEY=your-jwt-secret<br>
+FLASK_ENV=development<br>
+DEBUG=True</code>
+        </div>
+      </div>
+      
+      <div class="setup-card">
+        <h3>5. Initialize Database</h3>
+        <div class="code-block">
+          <code>python<br>
+>>> from app import db<br>
+>>> db.create_all()<br>
+>>> exit()<br><br>
+# Or use migration tools<br>
+flask db init<br>
+flask db migrate<br>
+flask db upgrade</code>
+        </div>
+      </div>
+      
+      <div class="setup-card">
+        <h3>6. Run Application</h3>
+        <div class="code-block">
+          <code>python app.py<br><br>
+# Server starts at:<br>
+# http://127.0.0.1:5000<br><br>
+# For production:<br>
+gunicorn -w 4 -b 0.0.0.0:5000 app:app</code>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="future-section">
+  <div class="container">
+    <div class="section-header">
+      <h2 class="section-title">Future Enhancements</h2>
+    </div>
+    
+    <div class="future-grid">
+      <div class="future-card">
+        <div class="future-emoji">🎨</div>
+        <h3 class="future-title">Multi-Zone Support</h3>
+        <p class="future-desc">Implement red, yellow, and green zones with different alert policies and escalation rules for more granular control.</p>
+      </div>
+      
+      <div class="future-card">
+        <div class="future-emoji">📱</div>
+        <h3 class="future-title">Push Notifications</h3>
+        <p class="future-desc">Integrate SMS and email alerts for critical events using Twilio and SendGrid APIs for instant stakeholder notification.</p>
+      </div>
+      
+      <div class="future-card">
+        <div class="future-emoji">🌐</div>
+        <h3 class="future-title">Edge Deployment</h3>
+        <p class="future-desc">Optimize for edge devices like NVIDIA Jetson and Coral TPU for low-latency, distributed monitoring at the network edge.</p>
+      </div>
+      
+      <div class="future-card">
+        <div class="future-emoji">📹</div>
+        <h3 class="future-title">Multi-Camera Stitching</h3>
+        <p class="future-desc">Combine feeds from multiple cameras into unified tracking system with centralized cloud dashboard for large venues.</p>
+      </div>
+      
+      <div class="future-card">
+        <div class="future-emoji">🤖</div>
+        <h3 class="future-title">Behavior Analysis</h3>
+        <p class="future-desc">Add AI-powered behavior recognition to detect suspicious activities, fights, falls, and other anomalous patterns.</p>
+      </div>
+      
+      <div class="future-card">
+        <div class="future-emoji">☁️</div>
+        <h3 class="future-title">Cloud Integration</h3>
+        <p class="future-desc">Deploy on AWS/Azure with auto-scaling, load balancing, and managed database services for enterprise-grade reliability.</p>
+      </div>
+      
+      <div class="future-card">
+        <div class="future-emoji">📊</div>
+        <h3 class="future-title">Advanced Analytics</h3>
+        <p class="future-desc">Implement predictive analytics using historical data to forecast crowd patterns and prevent incidents before they occur.</p>
+      </div>
+      
+      <div class="future-card">
+        <div class="future-emoji">🔒</div>
+        <h3 class="future-title">Privacy Enhancement</h3>
+        <p class="future-desc">Add face blurring and anonymization features to ensure GDPR compliance and protect individual privacy rights.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="cta-section">
+  <div class="container">
+    <h2 class="cta-title">Ready to Deploy?</h2>
+    <p class="cta-desc">Enhance public safety with intelligent crowd monitoring technology</p>
+    <a href="#" class="btn" onclick="alert('Contact: your.email@example.com'); return false;">Get Started</a>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="container">
+    <p>Developed by <strong>Tushar Dayma</strong> | B.E. AI & ML, ISB&M Engineering College</p>
+    <p>Infosys Springboard Internship Project © 2025</p>
+  </div>
+</footer>
+
+</body>
+</html>

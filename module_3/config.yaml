@@ -1,0 +1,14 @@
+model:
+  path: yolov8n.pt
+zones:
+  red:
+    label: DANGER ZONE
+alert_threshold: 5.0
+
+# ... your other config ...
+alert_threshold: 10
+zone_population_threshold: 5
+# --- ADD THIS LINE ---
+overall_population_threshold: 20 
+# --- END ---
+heatmap_alpha: 0.4
